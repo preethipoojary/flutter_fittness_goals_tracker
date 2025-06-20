@@ -24,30 +24,53 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
         child: Column(children: [
           TextField(
             controller: titleController,
-            decoration: InputDecoration(labelText: 'Title'),
+            decoration: InputDecoration(labelText: 'Title *'),
+            textInputAction: TextInputAction.next,
+            autofocus: true,
           ),
           TextField(
             controller: descriptionController,
             decoration: InputDecoration(labelText: 'Description'),
+            textInputAction: TextInputAction.next,
           ),
           TextField(
             controller: targetController,
-            decoration: InputDecoration(labelText: 'Target Steps'),
+            decoration: InputDecoration(labelText: 'Target Steps *'),
             keyboardType: TextInputType.number,
           ),
           SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
+              String title = titleController.text.trim();
+              String description = descriptionController.text.trim();
+              int? target = int.tryParse(targetController.text.trim());
+
+              if (title.isEmpty || target == null || target <= 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Please enter a valid title and steps > 0'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+
               final goal = Goal(
-                title: titleController.text,
-                description: descriptionController.text,
+                title: title,
+                description: description,
                 progress: 0,
-                target: int.tryParse(targetController.text) ?? 0,
+                target: target,
               );
+
               widget.onAdd(goal);
               Navigator.pop(context);
             },
             child: Text('Add Goal'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              textStyle: TextStyle(fontSize: 16),
+            ),
           ),
         ]),
       ),
